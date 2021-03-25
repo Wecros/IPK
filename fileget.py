@@ -17,8 +17,8 @@ Edge cases behaviour
 
 I have defined exit codes like this:
 0 - success
-1 - invalid program arguments
-2 - not found error
+1 - not found error
+2 - invalid program arguments
 3 - refused/lost connection error
 4 - other errors
 """
