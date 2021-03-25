@@ -45,7 +45,7 @@ Code = enum(
     "REFUSED_CONNECTION",
     "OTHER",
 )
-AGENT = 'xfilp46'
+AGENT = "xfilp46"
 
 
 def print_usage():
