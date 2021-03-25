@@ -1,7 +1,7 @@
-Brief:   Assignment for the IPK BUT FIT course 2020/2021.
-Author:  Marek "Wecros" Filip (xfilip46)
-Date:    2020/03/23
-Details: Network client that downloads files from a server and saves it
+- Brief:   Assignment for the IPK BUT FIT course 2020/2021.
+- Author:  Marek "Wecros" Filip (xfilip46)
+- Date:    2020/03/23
+- Details: Network client that downloads files from a server and saves it
          in local directory. Uses made-up NSP and FSP protocols.
 
 ### Python Version IMPORTANT
@@ -16,9 +16,9 @@ Please use `python3.8` version when testing on merlin.fit.vutbr.cz.
     - Only complete file paths are allowed, cannot download directories.
 
 ### Defined Exit Codes
-0 - success
-1 - invalid program arguments
-2 - not found error
-3 - refused/lost connection error
-4 - other errors
+- 0: success
+- 1: invalid program arguments
+- 2: not found error
+- 3: refused/lost connection error
+- 4: other errors
 
