@@ -40,8 +40,8 @@ def enum(*sequential, **named):
 
 Code = enum(
     "SUCCESS",
-    "INVALID_ARG",
     "NOT_FOUND",
+    "INVALID_ARG",
     "REFUSED_CONNECTION",
     "OTHER",
 )
@@ -57,7 +57,6 @@ def main():
 
     with udp_connection(address) as udp:
         address = get_tcp_server_address(udp, server)
-
     with tcp_connection(address) as tcp:
         handle_tcp_connection(tcp, server, filepath)
 
@@ -102,7 +101,7 @@ def handle_tcp_connection(tcp, server, filepath):
 
 def save_every_file_from_server(tcp, server):
     header, index = get_file_from_server(tcp, server, "index")
-    for file in index.splitlines():
+    for file in index.decode().splitlines():
         header, content = get_file_from_server(tcp, server, file)
         create_dir_if_necessary(file)
         save_content_to_file(content, file)
@@ -146,7 +145,7 @@ def create_dir_if_necessary(filepath):
 
 
 def save_content_to_file(content, filepath):
-    with open(filepath, "w") as file:
+    with open(filepath, "wb") as file:
         file.write(content)
 
 

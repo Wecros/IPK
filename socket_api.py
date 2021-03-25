@@ -82,7 +82,7 @@ class Socket:
         header = self.sock.recv(bytes)
         content = self._get_content(bytes)
 
-        header, content = header.decode(), b"".join(content).decode()
+        header, content = header.decode(), b"".join(content)
         return self._validate_header(header, content)
 
     def _get_content(self, bytes):
@@ -100,7 +100,7 @@ class Socket:
         header_extra = re.search(r"(Length:\d+\r\n\r\n)(.+)", header, flags=re.DOTALL)
         if header_extra:
             header = header[: header_extra.start(1)] + header_extra.group(1)
-            content = header_extra.group(2) + content
+            content = header_extra.group(2).encode() + content
 
         return header, content
 
