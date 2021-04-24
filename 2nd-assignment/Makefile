@@ -33,6 +33,7 @@ pack: clean
 
 clean:
 	rm -rf bin obj
+	rm -rf unit-test/bin unit-test/obj
 	rm -f $(LOGIN).tar $(TARGET)
 
 format: --roslynator

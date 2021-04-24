@@ -35,4 +35,19 @@ namespace PacketSniffer
         {
         }
     }
+
+    class NoInterfaceFound : PacketSnifferException
+    {
+        public NoInterfaceFound()
+        {
+        }
+
+        public NoInterfaceFound(string message) : base(message)
+        {
+        }
+
+        public NoInterfaceFound(string message, Exception inner) : base(message, inner)
+        {
+        }
+    }
 }

@@ -10,10 +10,12 @@ using System.IO;
 
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace PacketSniffer
 {
-    static class Code {
+    static class Code
+    {
         public const int Success = 0;
         public const int Error = 1;
     }
@@ -22,35 +24,20 @@ namespace PacketSniffer
     {
         static int Main(string[] args)
         {
-            try {
-                ArgumentParser.Parse(args);
-            } catch (InvalidArgException e) {
-                ErrorExit(Code.Error, e.Message);
-             }
-            TestStuff();
+            ArgumentParser.Parse(args);
+
+            var programArgs = ArgumentParser.programArgs;
+            var interfaceList = ArgumentParser.interfaceList;
+            var ifnameList = ArgumentParser.ifnameList;
+
+            if (String.IsNullOrEmpty(programArgs.Ifname))
+            {
+                return Code.Success;
+            }
+
+            Console.WriteLine(programArgs);
 
             return Code.Success;
         }
-
-        static void TestStuff()
-        {
-            Console.WriteLine("IPK Sniffer 🤓");
-            List<int> numbers = new List<int> {
-                5, 6, 7
-            };
-
-            foreach (var x in numbers)
-            {
-                Console.WriteLine(x);
-            }
-        }
-
-        static void ErrorExit(int code=1, string message="") {
-            TextWriter errorWriter = Console.Error;
-            errorWriter.WriteLine($"[ERR] {message}.");
-            System.Environment.Exit(code);
-    }
-
-
     }
 }
