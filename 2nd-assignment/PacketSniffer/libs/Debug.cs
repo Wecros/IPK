@@ -1,9 +1,13 @@
+/// <author>Marek "Wecros" Filip (xfilip46)</author>
+/// <date>2021/04/24</date>
+/// <summary>IPK BUT FIT Packet Sniffer 2021</summary>
+
 using System;
 using System.IO;
 
 namespace PacketSniffer
 {
-    class Debug
+    static class Debug
     {
         public static void LogMethodsOfObject(object obj)
         {

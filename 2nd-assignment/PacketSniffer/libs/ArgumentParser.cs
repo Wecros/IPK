@@ -4,15 +4,13 @@
 
 using System;
 using System.CommandLine;
-using System.CommandLine.Builder;
 using System.CommandLine.Invocation;
-using System.Reflection;
 using System.Collections.Generic;
 using SharpPcap;
 
 namespace PacketSniffer
 {
-    static class ArgumentParser
+    public static class ArgumentParser
     {
         public static ProgramArguments programArgs;
         public static CaptureDeviceList interfaceList = GetListOfInterfaces();
@@ -41,7 +39,8 @@ namespace PacketSniffer
             {
                 new Option<string>(
                     new string[] { "--interface", "-i" },
-                    "Interface to listen to. If empty, all available interfaces are listed."
+                    "Interface to listen to. If empty or without argument, " + 
+                    "print out all available interfaces."
                 ),
                 new Option<int>(
                     new string[] { "-p" },
@@ -83,7 +82,7 @@ Network analyzer that catches and filters packets on specific interface.
             ValidateArgumentReturnCode(argReturnCode);
         }
 
-        static void HandleArgs(string i, int p, bool tcp, bool udp, bool icmp, bool arp, int n)
+        public static void HandleArgs(string i, int p, bool tcp, bool udp, bool icmp, bool arp, int n)
         {
             ValidateArguments(p, n);
             HandleInterfaceArg(i);
@@ -136,7 +135,7 @@ Network analyzer that catches and filters packets on specific interface.
             List<string> ifnameList = new List<string>();
             var interfaces = GetListOfInterfaces();
 
-            foreach (var interf in interfaces)
+            foreach (ICaptureDevice interf in interfaces)
             {
                 ifnameList.Add(interf.Name);
             }

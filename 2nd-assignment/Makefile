@@ -1,9 +1,10 @@
 # Author: Marek "Wecros" Filip <xfilip46@fit.vutbr.cz>
 # Date: 2020/04/21
 
-LOGIN = xfilip46
-SRC_DIR = src
 SHELL = bash
+LOGIN = xfilip46
+SOURCE_PROJECT = PacketSniffer
+TEST_PROJECT = PacketSniffer.Tests
 TARGET = ipk-sniffer
 define FILEHEADER
 /// <author>Marek "Wecros" Filip (xfilip46)</author>
@@ -16,8 +17,8 @@ export FILEHEADER
 .PHONY: publish run build test pack clean help format analyze analyze-fix install-roslynator prepend-header
 
 publish:
-	dotnet publish -r linux-x64 -p:PublishSingleFile=true
-	@cp bin/Debug/netcoreapp3.1/linux-x64/publish/$(TARGET) .
+	dotnet publish $(SOURCE_PROJECT) -r linux-x64 -p:PublishSingleFile=true
+	@cp $(SOURCE_PROJECT)/bin/Debug/netcoreapp3.1/linux-x64/publish/$(TARGET) .
 
 run:
 	@dotnet run
@@ -32,8 +33,10 @@ pack: clean
 	tar -cf $(LOGIN).tar *
 
 clean:
-	rm -rf bin obj
-	rm -rf unit-test/bin unit-test/obj
+	cd $(SOURCE_PROJECT) && rm -rf bin obj
+	cd $(TEST_PROJECT) && rm -rf bin obj
+	find $(SOURCE_PROJECT) -type f -not -regex '.*/.*\.\(cs\|csproj\)' -delete
+	find $(TEST_PROJECT) -type f -not -regex '.*/.*\.\(cs\|csproj\)' -delete
 	rm -f $(LOGIN).tar $(TARGET)
 
 format: --roslynator
@@ -60,11 +63,11 @@ help:
 	@echo "make"
 	@echo "    Execute 'make publish' command."
 	@echo "make publish"
-	@echo "    Build the project as a single binary ipk-file, which is placed in the root directory."
+	@echo "    Build the project as a single binary ipk-sniffer, which is placed in the root directory."
 	@echo "make run"
 	@echo "    Build and run the program."
 	@echo "make build"
-	@echo "    Build the project. Built files are placed in bin/ and obj/ directories."
+	@echo "    Build the projects. Built files are placed in bin/ and obj/ directories."
 	@echo "make test"
 	@echo "    Build and test the project."
 	@echo "make pack"

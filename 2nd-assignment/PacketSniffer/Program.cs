@@ -1,16 +1,9 @@
 /// <author>Marek "Wecros" Filip (xfilip46)</author>
 /// <date>2021/04/21</date>
 /// <summary>IPK BUT FIT Packet Sniffer 2021</summary>
-#nullable enable
 
 using System;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.IO;
-
-using System.Net.Sockets;
-using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 
 namespace PacketSniffer
 {
@@ -28,14 +21,20 @@ namespace PacketSniffer
 
             var programArgs = ArgumentParser.programArgs;
             var interfaceList = ArgumentParser.interfaceList;
-            var ifnameList = ArgumentParser.ifnameList;
 
+            // Exit if no interface has been specified
             if (String.IsNullOrEmpty(programArgs.Ifname))
             {
                 return Code.Success;
             }
 
+            var interf = interfaceList.Where(i => i.Name == programArgs.Ifname).FirstOrDefault();
+            Sniffer sniffer = new Sniffer(interf, ArgumentParser.programArgs);
+
+            sniffer.Sniff();
+
             Console.WriteLine(programArgs);
+            Console.WriteLine(interf);
 
             return Code.Success;
         }
