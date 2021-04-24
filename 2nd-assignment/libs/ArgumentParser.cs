@@ -5,6 +5,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using SharpPcap;
 
 namespace PacketSniffer
 {
@@ -68,20 +69,69 @@ Network analyzer that catches and filters packets on specific interface.
 
         static void HandleArgs(string i, int p, bool tcp, bool udp, bool icmp, bool arp, int n)
         {
-            Console.WriteLine($"ifname: {i}");
-            Console.WriteLine($"port: {p}");
-            Console.WriteLine($"tcp: {tcp}");
-            Console.WriteLine($"udp: {udp}");
-            Console.WriteLine($"icmp: {icmp}");
-            Console.WriteLine($"arp: {arp}");
-            Console.WriteLine($"packetCount: {n}");
+            ValidateArguments(p, n);
+
+            if (String.IsNullOrEmpty(i)) {
+                var devices = CaptureDeviceList.Instance;
+                foreach (var dev in devices) {
+                    Console.WriteLine($"{dev}\n");
+                }
+            }
+
+            if (!(tcp || udp || icmp || arp)) {
+                tcp = true; 
+                udp = true; 
+                icmp = true; 
+                arp = true; 
+            }
+            var args = new ProgramArguments(i, p, tcp, udp, icmp, arp, n);
+            Console.WriteLine(args);
         }
+
+        static void ValidateArguments(int p, int n){
+            if (p < 0) {
+                throw new InvalidArgException("'n' must be greater than 0");
+            }
+            else if (n < 0) {
+                throw new InvalidArgException("'n' must be greater than 0");
+            }
+        }
+
 
         static void ValidateArgumentReturnCode(int code) {
             if (code != 0)
             {
-                throw new InvalidArgException("Invalid Program Arguments present");
+                throw new InvalidArgException("Arguments entered incorrectly");
             }
         }
     }
 }
+
+public struct ProgramArguments {
+    public ProgramArguments(string ifname, int port, bool tcp, bool udp, bool icmp, bool arp, int n) {
+        Ifname = ifname;
+        PortNumber = port;
+        Tcp = tcp;
+        Udp = udp;
+        Icmp = icmp;
+        Arp = arp;
+        PacketCountToDisplay = n;
+    }
+
+    public string Ifname { get; set; }
+    public int PortNumber { get; set; }
+    public bool Tcp { get; set; }
+    public bool Udp { get; set; }
+    public bool Icmp { get; set; }
+    public bool Arp { get; set; }
+    public int PacketCountToDisplay { get; set; }
+
+    public override string ToString() => $@"ifname: {Ifname}
+port:   {PortNumber}
+tcp:    {Tcp}
+udp:    {Udp}
+icmp:   {Icmp}
+arp:    {Arp}
+n:      {PacketCountToDisplay}";
+}
+

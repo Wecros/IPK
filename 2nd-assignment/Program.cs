@@ -35,14 +35,6 @@ namespace PacketSniffer
         static void TestStuff()
         {
             Console.WriteLine("IPK Sniffer 🤓");
-            List<int> numbers = new List<int> {
-                5, 6, 7
-            };
-
-            foreach (var x in numbers)
-            {
-                Console.WriteLine(x);
-            }
         }
 
         static void ErrorExit(int code=1, string message="") {
