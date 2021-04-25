@@ -4,14 +4,15 @@
 
 using System;
 using SharpPcap;
-using System.Globalization;
 using PacketDotNet;
-using System.Text;
 
 namespace PacketSniffer
 {
     class Sniffer
     {
+        /// <summary>
+        /// Main handling of the code logic is done here.
+        /// </summary>
         public Sniffer(ICaptureDevice interf, ProgramArguments args)
         {
             Interface = interf;
@@ -23,14 +24,19 @@ namespace PacketSniffer
         private int ProcessedPacketCount { get; set; }
         private bool sniffingDone = false;
 
+        /// <summary>
+        /// Main method for doing the heavy work.
+        /// </summary>
         public void Sniff()
         {
+            // Open interface in promicuous mode, default time out 1000 milliseconds.
             int readTimeoutInMilliseconds = 1000;
             Interface.Open(DeviceMode.Promiscuous, readTimeoutInMilliseconds);
             string filter = SetInterfaceFilter();
+
             Console.WriteLine($"-- Sniffing on {Interface.Description}\n-- using filter: {filter}");
 
-
+            // Set interface handling for packet arrival
             Interface.OnPacketArrival += Interface_OnPacketArrival;
             Interface.StartCapture();
             while (!sniffingDone) { }  // wait until sniffing is done
@@ -39,10 +45,15 @@ namespace PacketSniffer
             Console.WriteLine("-- Finished sniffing...");
         }
 
+
+        /// <summary>
+        /// Set interface filter and return the created filter.
+        /// </summary>
+        /// <example>
+        /// icmp or icmp6 or arp or udp port 80 or tcp port 80
+        /// </example>
         string SetInterfaceFilter()
         {
-            //icmp or icmp6 or arp or udp port 80 or tcp port 80
-            //icmp or icmp6 or arp or udp port 80 or tcp port 80
             string filter = "";
             if (ProgramArgs.Icmp)
             {
@@ -85,6 +96,9 @@ namespace PacketSniffer
             return filter;
         }
 
+        /// <summary>
+        /// Function that is called every time a packet arrives.
+        /// </summary>
         void Interface_OnPacketArrival(object sender, CaptureEventArgs evnt)
         {
             var interf = (ICaptureDevice)sender;
@@ -97,6 +111,9 @@ namespace PacketSniffer
             }
         }
 
+        /// <summary>
+        /// Main function for processsing packets.
+        /// </summary>
         void ProcessPacket(RawCapture rawPacket)
         {
             DateTime time = rawPacket.Timeval.Date;
@@ -112,6 +129,11 @@ namespace PacketSniffer
             Console.WriteLine(outputPacket);
         }
 
+        /// <summary>
+        /// Get correct packet depending on the filter.
+        /// Either tcp, udp, arp, icmp
+        /// All packets are gained both in ipv4 and ipv6 form.
+        /// </summary>
         OutputPacket GetCorrectPacket(Packet packet)
         {
             TcpPacket tcpPacket = packet.Extract<PacketDotNet.TcpPacket>();
@@ -119,11 +141,6 @@ namespace PacketSniffer
             ArpPacket arpPacket = packet.Extract<PacketDotNet.ArpPacket>();
             IcmpV4Packet icmpV4Packet = packet.Extract<PacketDotNet.IcmpV4Packet>();
             IcmpV6Packet icmpV6Packet = packet.Extract<PacketDotNet.IcmpV6Packet>();
-            //Console.WriteLine($"tcp: {tcpPacket}");
-            //Console.WriteLine($"udp: {udpPacket}");
-            //Console.WriteLine($"arp: {arpPacket}");
-            //Console.WriteLine($"icmpV4: {icmpV4Packet}");
-            //Console.WriteLine($"icmpV6: {icmpV6Packet}");
 
             OutputPacket outputPacket;
             bool isInstantiazed = false;
@@ -161,6 +178,9 @@ namespace PacketSniffer
             return outputPacket;
         }
 
+        /// <summary>
+        /// Construct OutputPacket from a TCP packet.
+        /// </summary>
         OutputPacket GetTcpPacket(TcpPacket tcpPacket)
         {
             var ipPacket = (PacketDotNet.IPPacket)tcpPacket.ParentPacket;
@@ -176,6 +196,9 @@ namespace PacketSniffer
             return outputPacket;
         }
 
+        /// <summary>
+        /// Construct OutputPacket from an UDP packet.
+        /// </summary>
         OutputPacket GetUdpPacket(UdpPacket udpPacket)
         {
             var ipPacket = (PacketDotNet.IPPacket)udpPacket.ParentPacket;
@@ -191,14 +214,18 @@ namespace PacketSniffer
             return outputPacket;
         }
 
+        /// <summary>
+        /// Construct OutputPacket from an ARP packet.
+        /// ARP packet has no ports.
+        /// </summary>
         OutputPacket GetArpPacket(ArpPacket arpPacket)
         {
             var ipPacket = (PacketDotNet.IPPacket)arpPacket.ParentPacket;
             Console.WriteLine(ipPacket);
             System.Net.NetworkInformation.PhysicalAddress srcIp = arpPacket.SenderHardwareAddress;
             System.Net.NetworkInformation.PhysicalAddress dstIp = arpPacket.TargetHardwareAddress;
-            string srcPort = "no-port";
-            string dstPort = "no-port";
+            int srcPort = -1;
+            int dstPort = -1;
             byte[] data = arpPacket.BytesSegment.Bytes;
 
             OutputPacket outputPacket = new OutputPacket(
@@ -208,13 +235,17 @@ namespace PacketSniffer
             return outputPacket;
         }
 
+        /// <summary>
+        /// Construct OutputPacket from an ICMPv4 packet.
+        /// ICMPv4 packet has no ports.
+        /// </summary>
         OutputPacket GetIcmpV4Packet(IcmpV4Packet icmpV4Packet)
         {
             var ipPacket = (PacketDotNet.IPPacket)icmpV4Packet.ParentPacket;
             System.Net.IPAddress srcIp = ipPacket.SourceAddress;
             System.Net.IPAddress dstIp = ipPacket.DestinationAddress;
-            string srcPort = "no-port";
-            string dstPort = "no-port";
+            int srcPort = -1;
+            int dstPort = -1;
             byte[] data = icmpV4Packet.BytesSegment.Bytes;
 
             OutputPacket outputPacket = new OutputPacket(
@@ -223,13 +254,17 @@ namespace PacketSniffer
             return outputPacket;
         }
 
+        /// <summary>
+        /// Construct OutputPacket from an ICMPv6 packet.
+        /// ICMPv6 packet has no ports.
+        /// </summary>
         OutputPacket GetIcmpV6Packet(IcmpV6Packet icmpV6Packet)
         {
             var ipPacket = (PacketDotNet.IPPacket)icmpV6Packet.ParentPacket;
             System.Net.IPAddress srcIp = ipPacket.SourceAddress;
             System.Net.IPAddress dstIp = ipPacket.DestinationAddress;
-            string srcPort = "no-port";
-            string dstPort = "no-port";
+            int srcPort = -1;
+            int dstPort = -1;
             byte[] data = icmpV6Packet.BytesSegment.Bytes;
 
             OutputPacket outputPacket = new OutputPacket(
@@ -238,32 +273,51 @@ namespace PacketSniffer
             return outputPacket;
         }
     }
+    /// <summary>
+    /// Structure for holding information about outputted packet.
+    /// Calling Console.WriteLine causes it to print the final packet
+    /// as specified by the assignemnt.
+    /// </summary>
     public struct OutputPacket
     {
-        public OutputPacket(object srcIp, object srcPort, object dstIp,
-                            object dstPort, byte[] packetData, int length = 0, string time = "")
+        public OutputPacket(object srcIp, int srcPort, object dstIp,
+                            int dstPort, byte[] packetData, int length = 0, string time = "")
         {
             Time = time;
             SrcIp = srcIp.ToString();
-            SrcPort = srcPort.ToString();
+            SrcPort = srcPort;
             DstIp = dstIp.ToString();
-            DstPort = dstPort.ToString();
+            DstPort = dstPort;
             Length = length;
             Data = packetData;
         }
 
         public string Time { get; set; }
         public string SrcIp { get; set; }
-        public string SrcPort { get; set; }
+        public int SrcPort { get; set; }
         public string DstIp { get; set; }
-        public string DstPort { get; set; }
+        public int DstPort { get; set; }
         public int Length { get; set; }
         public byte[] Data { get; set; }
 
-        public override string ToString() => String.Format(
-            "{0} {1} : {2} > {3} : {4}, length {5} bytes\n{6}",
-            Time, SrcIp, SrcPort, DstIp, DstPort, Length,
-            Utils.ConvertPacketDataToOutputFormat(Data)
-        );
+        /// <summary>
+        /// Function that outputs information about the packet in
+        /// a human-readable form as specified by the assignment.
+        /// </summary>
+        public override string ToString() {
+            if (SrcPort == -1 || DstPort == -1) {
+                return String.Format(
+                    "{0} {1} > {2}, length {3} bytes\n{4}",
+                    Time, SrcIp, DstIp, Length,
+                    Utils.ConvertPacketDataToOutputFormat(Data)
+                );
+            } else {
+                return String.Format(
+                    "{0} {1} : {2} > {3} : {4}, length {5} bytes\n{6}",
+                    Time, SrcIp, SrcPort, DstIp, DstPort, Length,
+                    Utils.ConvertPacketDataToOutputFormat(Data)
+                );
+            }
+        }
     }
 }

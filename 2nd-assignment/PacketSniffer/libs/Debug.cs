@@ -7,6 +7,9 @@ using System.IO;
 
 namespace PacketSniffer
 {
+    /// <summary>
+    /// Debug class for logging and exiting the program.
+    /// </summary>
     static class Debug
     {
         public static void LogMethodsOfObject(object obj)
@@ -29,6 +32,9 @@ namespace PacketSniffer
             }
         }
 
+        /// <summary>
+        /// Default way of exiting the program when error is encountered.
+        /// </summary>
         public static void ErrorExit(int code = 1, string message = "")
         {
             TextWriter errorWriter = Console.Error;

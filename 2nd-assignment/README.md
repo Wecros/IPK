@@ -8,6 +8,15 @@ Network analyzer that catches and filters packets on specific interface.
 
 Time is listed as UTC timezone.
 
+### Return codes
+
+* Success: 0
+* Error: 1
+
+### Code base
+
+I try to follow guidelines I gained from reading Clean Code by Rober C. Martin. 
+
 ## Script usage
 
 ```

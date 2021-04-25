@@ -16,6 +16,9 @@ namespace PacketSniffer
         public static CaptureDeviceList interfaceList = GetListOfInterfaces();
         public static List<string> ifnameList = GetListOfInterfaceNames();
 
+        /// <summary>
+        /// Parse the program arguments and return structure holding them.
+        /// </summary>
         public static ProgramArguments Parse(string[] args)
         {
             // Handle optional -i || --interface with no value
@@ -75,6 +78,9 @@ Network analyzer that catches and filters packets on specific interface.
             return rootCommand;
         }
 
+        /// <summary>
+        /// Invoke the System.CommandLine argument handler.
+        /// </summary>
         static void InvokeArgumentHandler(RootCommand rootCommand, string[] args)
         {
             rootCommand.Handler = CommandHandler.Create<string, int?, bool, bool, bool, bool, int?>(HandleArgs);
@@ -82,6 +88,10 @@ Network analyzer that catches and filters packets on specific interface.
             ValidateArgumentReturnCode(argReturnCode);
         }
 
+        /// <summary>
+        /// When no protocol is specified, assume all are selected.
+        /// When n or p is not specified, assigne them default value (1 packet and all ports respectively).
+        /// </summary>
         public static void HandleArgs(string i, int? p, bool tcp, bool udp, bool icmp, bool arp, int? n)
         {
             ValidateArguments(p, n);
@@ -173,6 +183,9 @@ Network analyzer that catches and filters packets on specific interface.
     }
 }
 
+/// <summary>
+/// Structure holding the program arguments, is needed for sniffing.
+/// </summary>
 public struct ProgramArguments
 {
     public ProgramArguments(string ifname, int? port, bool tcp, bool udp, bool icmp, bool arp, int? n)
@@ -194,6 +207,9 @@ public struct ProgramArguments
     public bool Arp { get; set; }
     public int? PacketCountToDisplay { get; set; }
 
+    /// <summary>
+    /// Useful for debugging purposes.
+    /// </summary>
     public override string ToString() => $@"ifname: {Ifname}
 port:   {PortNumber}
 tcp:    {Tcp}

@@ -4,9 +4,15 @@
 
 using System;
 using System.Linq;
+using SharpPcap;
 
 namespace PacketSniffer
 {
+    /// <summary>
+    /// Class holding the possible return codes.
+    /// 0: success,
+    /// 1: error.
+    /// </summary>
     static class Code
     {
         public const int Success = 0;
@@ -15,6 +21,9 @@ namespace PacketSniffer
 
     static class Program
     {
+        /// <summary>
+        /// Script's entry point.
+        /// </summary>
         static int Main(string[] args)
         {
             try
@@ -42,12 +51,17 @@ namespace PacketSniffer
                 return Code.Success;
             }
 
-            var interf = interfaceList.Where(i => i.Name == programArgs.Ifname).FirstOrDefault();
+            var interf = GetInterfaceByName(interfaceList, programArgs.Ifname);
             Sniffer sniffer = new Sniffer(interf, ArgumentParser.programArgs);
 
             sniffer.Sniff();
 
             return Code.Success;
+        }
+
+        static ICaptureDevice GetInterfaceByName(CaptureDeviceList interfaceList, string ifname) {
+            var interf = interfaceList.Where(i => i.Name == ifname).FirstOrDefault();
+            return interf;
         }
     }
 }
