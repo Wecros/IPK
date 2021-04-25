@@ -39,10 +39,10 @@ namespace PacketSniffer
             {
                 new Option<string>(
                     new string[] { "--interface", "-i" },
-                    "Interface to listen to. If empty or without argument, " + 
+                    "Interface to listen to. If empty or without argument, " +
                     "print out all available interfaces."
                 ),
-                new Option<int>(
+                new Option<int?>(
                     new string[] { "-p" },
                     "Packets will be filtered by this port. If empty, all ports are considered."
                 ),
@@ -62,7 +62,7 @@ namespace PacketSniffer
                     new string[] { "--arp" },
                     "Filter packets by ARP frames."
                 ),
-                new Option<int>(
+                new Option<int?>(
                     new string[] { "-n" },
                     "Number of packets to display. If empty, only one packet is displayed."
                 )
@@ -77,16 +77,24 @@ Network analyzer that catches and filters packets on specific interface.
 
         static void InvokeArgumentHandler(RootCommand rootCommand, string[] args)
         {
-            rootCommand.Handler = CommandHandler.Create<string, int, bool, bool, bool, bool, int>(HandleArgs);
+            rootCommand.Handler = CommandHandler.Create<string, int?, bool, bool, bool, bool, int?>(HandleArgs);
             int argReturnCode = rootCommand.Invoke(args);
             ValidateArgumentReturnCode(argReturnCode);
         }
 
-        public static void HandleArgs(string i, int p, bool tcp, bool udp, bool icmp, bool arp, int n)
+        public static void HandleArgs(string i, int? p, bool tcp, bool udp, bool icmp, bool arp, int? n)
         {
             ValidateArguments(p, n);
             HandleInterfaceArg(i);
 
+            if (n == null)
+            {
+                n = 1;
+            }
+            if (p == null)
+            {
+                p = -1;
+            }
             if (!(tcp || udp || icmp || arp))
             {
                 tcp = true;
@@ -98,13 +106,13 @@ Network analyzer that catches and filters packets on specific interface.
             programArgs = new ProgramArguments(i, p, tcp, udp, icmp, arp, n);
         }
 
-        static void ValidateArguments(int p, int n)
+        static void ValidateArguments(int? p, int? n)
         {
             if (p < 0)
             {
-                Debug.ErrorExit(Code.Error, "'p' must be greater than 0");
+                Debug.ErrorExit(Code.Error, "'p' must be greater or equal to 0");
             }
-            else if (n < 0)
+            else if (n <= 0)
             {
                 Debug.ErrorExit(Code.Error, "'n' must be greater than 0");
             }
@@ -167,7 +175,7 @@ Network analyzer that catches and filters packets on specific interface.
 
 public struct ProgramArguments
 {
-    public ProgramArguments(string ifname, int port, bool tcp, bool udp, bool icmp, bool arp, int n)
+    public ProgramArguments(string ifname, int? port, bool tcp, bool udp, bool icmp, bool arp, int? n)
     {
         Ifname = ifname;
         PortNumber = port;
@@ -179,12 +187,12 @@ public struct ProgramArguments
     }
 
     public string Ifname { get; set; }
-    public int PortNumber { get; set; }
+    public int? PortNumber { get; set; }
     public bool Tcp { get; set; }
     public bool Udp { get; set; }
     public bool Icmp { get; set; }
     public bool Arp { get; set; }
-    public int PacketCountToDisplay { get; set; }
+    public int? PacketCountToDisplay { get; set; }
 
     public override string ToString() => $@"ifname: {Ifname}
 port:   {PortNumber}

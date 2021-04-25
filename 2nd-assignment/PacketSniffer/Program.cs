@@ -17,6 +17,20 @@ namespace PacketSniffer
     {
         static int Main(string[] args)
         {
+            try
+            {
+                return StartProgram(args);
+            }
+            catch (Exception)
+            {
+                Debug.ErrorExit(Code.Error, "Could not sniff packets, please try different interface " +
+                                            "or filter combination");
+            }
+            return Code.Success;
+        }
+
+        static int StartProgram(string[] args)
+        {
             ArgumentParser.Parse(args);
 
             var programArgs = ArgumentParser.programArgs;
@@ -32,9 +46,6 @@ namespace PacketSniffer
             Sniffer sniffer = new Sniffer(interf, ArgumentParser.programArgs);
 
             sniffer.Sniff();
-
-            Console.WriteLine(programArgs);
-            Console.WriteLine(interf);
 
             return Code.Success;
         }

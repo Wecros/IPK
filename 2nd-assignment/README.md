@@ -4,6 +4,10 @@
 
 Network analyzer that catches and filters packets on specific interface.
 
+## Implementation details
+
+Time is listed as UTC timezone.
+
 ## Script usage
 
 ```
@@ -65,11 +69,13 @@ README.md
 
 ## Extensions
 
-No extension has been implemented.
+Additional statistics are printed out when parsing is finished.
+Used filter is written out at the start of sniffing. IPv6 support.
 
 ## Restrictions
 
-IPv6 has not been implemented.
+Nothing I know of.
+
 
 ## Makefile targets (installation and development)
 
