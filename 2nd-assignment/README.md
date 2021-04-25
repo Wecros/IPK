@@ -3,6 +3,7 @@
 ## File structure (hand-in)
 
 Makefile
+manual.pdf
 PacketSniffer/
 PacketSniffer/libs/
 PacketSniffer/libs/ArgumentParser.cs
