@@ -41,6 +41,9 @@ I try to follow guidelines I gained from reading Clean Code by Rober C. Martin.
 Relevant `ipk-sniffer` source codes are located in the `PacketSniffer` directory.
 Entry point is in `Program.cs`. Other file names should be self-explanatory.
 
+I use [XML-style](https://docs.microsoft.com/en-us/dotnet/csharp/codedoc)
+comments to document the structures, classes and their methods.
+
 Unit tests using *xUnit* are implemented in `PacketSniffer.Tests` directory,
 primary testing the utils functions.
 

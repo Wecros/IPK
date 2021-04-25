@@ -108,7 +108,6 @@ namespace PacketSniffer
         /// Function for splitting byte array to chunks of bytes.
         /// </summary>
         /// <see>
-        /// https://www.codeproject.com/Questions/684370/i-want-to-read-1-kb-data-each-time-from-byte-array
         /// https://www.codeproject.com/Answers/684747/i-want-to-read-1-kb-data-each-time-from-byte-array#answer2
         /// <author>Matt T Heffron</author>
         /// </see>
